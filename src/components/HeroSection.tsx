@@ -2,7 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Search, Calendar } from 'lucide-react';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  onFindMatchClick: () => void;
+  onExploreWeddingsClick: () => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ onFindMatchClick, onExploreWeddingsClick }) => {
   const floatingElements = Array.from({ length: 8 }, (_, i) => i);
 
   return (
@@ -85,6 +90,7 @@ const HeroSection = () => {
             <motion.button
               whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(233, 30, 99, 0.3)" }}
               whileTap={{ scale: 0.95 }}
+              onClick={onFindMatchClick}
               className="flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full font-poppins font-semibold text-lg shadow-lg hover:shadow-xl transition-all"
             >
               <Search className="w-5 h-5" />
@@ -94,6 +100,7 @@ const HeroSection = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={onExploreWeddingsClick}
               className="flex items-center space-x-2 px-8 py-4 bg-white/20 backdrop-blur-md text-white border-2 border-white/30 rounded-full font-poppins font-semibold text-lg hover:bg-white/30 transition-all"
             >
               <Calendar className="w-5 h-5" />

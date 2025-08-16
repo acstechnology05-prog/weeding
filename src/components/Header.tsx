@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Menu, X, User, Calendar, Sparkles } from 'lucide-react';
 
-const Header = () => {
+interface HeaderProps {
+  onLoginClick: () => void;
+  onSignupClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onLoginClick, onSignupClick }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
@@ -59,6 +64,7 @@ const Header = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={onLoginClick}
               className="px-4 py-2 text-primary border border-primary rounded-full hover:bg-primary hover:text-white transition-all font-poppins font-medium"
             >
               Sign In
@@ -66,6 +72,7 @@ const Header = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={onSignupClick}
               className="px-6 py-2 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full hover:shadow-lg transition-all font-poppins font-medium"
             >
               Join Now
@@ -106,10 +113,16 @@ const Header = () => {
                 </a>
               ))}
               <div className="flex flex-col space-y-2 pt-4">
-                <button className="px-4 py-2 text-primary border border-primary rounded-full font-poppins">
+                <button 
+                  onClick={onLoginClick}
+                  className="px-4 py-2 text-primary border border-primary rounded-full font-poppins"
+                >
                   Sign In
                 </button>
-                <button className="px-4 py-2 bg-primary text-white rounded-full font-poppins">
+                <button 
+                  onClick={onSignupClick}
+                  className="px-4 py-2 bg-primary text-white rounded-full font-poppins"
+                >
                   Join Now
                 </button>
               </div>
