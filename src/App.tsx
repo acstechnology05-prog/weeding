@@ -2,6 +2,9 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from './hooks/useAuth';
+import { useAnalytics } from './hooks/useAnalytics';
+import { notificationService } from './services/notificationService';
+import { paymentService } from './services/paymentService';
 import Header from './components/Header';
 import HeroSection from './components/HeroSection';
 import StatsSection from './components/StatsSection';
@@ -17,8 +20,43 @@ import LoadingSpinner from './components/LoadingSpinner';
 
 function App() {
   const { user, userProfile, isLoading, isAuthenticated } = useAuth();
+  const { trackConversion, trackEngagement } = useAnalytics(userProfile);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+
+  useEffect(() => {
+    // Initialize services
+    const initializeServices = async () => {
+      // Initialize payment service
+      await paymentService.initializeStripe();
+      
+      // Initialize push notifications
+      if (userProfile) {
+        const token = await notificationService.initializePushNotifications();
+        if (token) {
+          console.log('Push notifications initialized');
+        }
+        
+        // Listen for foreground messages
+        notificationService.onForegroundMessage((payload) => {
+          console.log('Foreground notification:', payload);
+        });
+      }
+    };
+
+    initializeServices();
+
+    // Track session start
+    trackEngagement('session_start');
+
+    // Track session end on page unload
+    const handleBeforeUnload = () => {
+      trackEngagement('session_end');
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [userProfile, trackEngagement]);
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -71,6 +109,7 @@ function App() {
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => {
           setShowAuthModal(false);
+          trackConversion(authMode === 'signup' ? 'signup' : 'first_match');
           window.location.reload(); // Refresh to load dashboard
         }}
         initialMode={authMode}

@@ -2,8 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Filter } from 'lucide-react';
 import WeddingCard from './WeddingCard';
+import MapComponent from './MapComponent';
+import { mapsService, type VenueLocation } from '../services/mapsService';
 
 const WeddingSection = () => {
+  const [showMap, setShowMap] = React.useState(false);
+  const [venues, setVenues] = React.useState<VenueLocation[]>([]);
+
   const weddingEvents = [
     {
       id: 1,
@@ -180,19 +185,35 @@ const WeddingSection = () => {
             <p className="font-poppins text-gray-600">
               Discover beautiful venues across India for your perfect wedding experience
             </p>
-          </div>
-          
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-16 h-16 text-primary mx-auto mb-4" />
-                <p className="font-poppins text-gray-600">Interactive Map Coming Soon</p>
-                <p className="font-poppins text-sm text-gray-500 mt-2">
-                  Click on pins to explore wedding venues and book tickets
-                </p>
-              </div>
+            
+            <div className="flex justify-center mt-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowMap(!showMap)}
+                className="px-6 py-3 bg-primary text-white rounded-lg font-poppins font-medium hover:bg-primary-dark transition-colors"
+              >
+                {showMap ? 'Hide Map' : 'Show Interactive Map'}
+              </motion.button>
             </div>
           </div>
+          
+          {showMap && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <MapComponent
+                venues={venues}
+                height="500px"
+                onVenueSelect={(venue) => {
+                  console.log('Selected venue:', venue);
+                  // Handle venue selection
+                }}
+              />
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </section>

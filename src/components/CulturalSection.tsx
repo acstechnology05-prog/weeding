@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Camera, Music, Palette, Play, X } from 'lucide-react';
+import CulturalInfoModal from './CulturalInfoModal';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 const CulturalSection = () => {
   const [selectedRitual, setSelectedRitual] = useState<number | null>(null);
+  const [selectedRitualName, setSelectedRitualName] = useState<string>('');
+  const [showCulturalModal, setShowCulturalModal] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const { trackCulturalEvent } = useAnalytics();
 
   const rituals = [
     {
@@ -175,7 +180,12 @@ const CulturalSection = () => {
                 <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedRitual(ritual.id)}
+                  onClick={() => {
+                    setSelectedRitual(ritual.id);
+                    setSelectedRitualName(ritual.name);
+                    setShowCulturalModal(true);
+                    trackCulturalEvent('view_ritual', ritual.name);
+                  }}
                   className={`bg-gradient-to-br ${ritual.color} p-8 rounded-2xl shadow-lg cursor-pointer text-white text-center relative overflow-hidden`}
                 >
                   {/* Background Pattern */}
@@ -265,52 +275,15 @@ const CulturalSection = () => {
       </div>
 
       {/* Ritual Animation Modal */}
-      <AnimatePresence>
-        {selectedRitual && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedRitual(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl p-8 max-w-md w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-playfair text-2xl font-bold text-gray-800">
-                  {rituals.find(r => r.id === selectedRitual)?.name}
-                </h3>
-                <button
-                  onClick={() => setSelectedRitual(null)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
-              
-              <div className="aspect-square bg-gradient-to-br from-accent/20 to-secondary/20 rounded-lg mb-6 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4">
-                    {rituals.find(r => r.id === selectedRitual)?.icon}
-                  </div>
-                  <p className="font-poppins text-gray-600">
-                    {rituals.find(r => r.id === selectedRitual)?.animation}
-                  </p>
-                </div>
-              </div>
-              
-              <p className="font-poppins text-gray-700 text-center">
-                {rituals.find(r => r.id === selectedRitual)?.description}
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CulturalInfoModal
+        isOpen={showCulturalModal}
+        onClose={() => {
+          setShowCulturalModal(false);
+          setSelectedRitual(null);
+          setSelectedRitualName('');
+        }}
+        ritualName={selectedRitualName}
+      />
     </section>
   );
 };

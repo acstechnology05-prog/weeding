@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Leaflet CSS */
+@import 'leaflet/dist/leaflet.css';
+
 /* Custom CSS for 3D effects and animations */
 .perspective-1000 {
   perspective: 1000px;
