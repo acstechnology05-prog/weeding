@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Calendar, Bell, User, Settings, LogOut } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, Bell, User, Settings, LogOut, CheckCircle } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { notificationService } from '../../services/notificationService';
 import MatchesTab from './MatchesTab';
